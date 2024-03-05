@@ -20,4 +20,4 @@ class BuyCar(models.Model):
     max_price = models.PositiveBigIntegerField(blank=True, null=True)
     
     def __str__(self) -> str:
-        return f"{self.user}: {self.car} - {self.date}"
+        return f"{self.user} : {self.car} - {self.date.year}/{self.date.month}/{self.date.day} - {self.date.hour}:{self.date.minute}:{self.date.second}"
