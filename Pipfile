@@ -14,7 +14,7 @@ django-filter = "*"
 django-templated-mail = "*"
 django-environ = "*"
 djoser = "*"
-
+django-phonenumber-field = "*"
 
 [dev-packages]
 pytest = "*"
