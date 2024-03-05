@@ -5,5 +5,5 @@ from buy_car.models import UserSite
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_UserSite_for_new_user(sender, **kwargs):
-  if kwargs['created']:
-    UserSite.objects.create(user=kwargs['instance'])
+    if kwargs['created']:
+        UserSite.objects.create(user=kwargs['instance'])
