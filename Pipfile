@@ -4,8 +4,21 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+django = "*"
+djangorestframework = "*"
+drf-nested-routers = "*"
+django-cors-headers = "*"
+djangorestframework-simplejwt = "*"
+django-debug-toolbar = "*"
+django-filter = "*"
+django-templated-mail = "*"
+django-environ = "*"
+djoser = "*"
+
 
 [dev-packages]
+pytest = "*"
+pytest-django = "*"
 
 [requires]
 python_version = "3.11"
