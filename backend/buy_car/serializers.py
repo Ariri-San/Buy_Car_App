@@ -1,20 +1,34 @@
 from rest_framework import serializers
-from .models import BuyCar
+from .models import BuyCar, Car
+
+
+class CarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Car
+        fields = ['name', 'site', 'price']
+
 
 
 class CreateBuyCarSerializer(serializers.ModelSerializer):
-    class Meta():
+    def create(self, validated_data):
+        return BuyCar.objects.create(**validated_data, user=self.context["user"])
+    
+    class Meta:
         model = BuyCar
-        fields = ['id', 'username', 'password', 'phone', 'email']
+        fields = ['id', 'car', 'cart_number', 'date', 'max_price']
 
 
 class UpdateBuyCarSerializer(serializers.ModelSerializer):
-    class Meta():
+    car = CarSerializer(read_only=True)
+    
+    class Meta:
         model = BuyCar
-        fields = ['id', 'username', 'password', 'phone', 'email']
+        fields = ['car', 'cart_number', 'date', 'max_price']
 
 
 class BuyCarSerializer(serializers.ModelSerializer):
-    class Meta():
+    car = CarSerializer(read_only=True)
+    
+    class Meta:
         model = BuyCar
-        fields = ['id', 'username', 'password', 'phone', 'email']
+        fields = ['id', 'car', 'cart_number', 'date', 'max_price']
