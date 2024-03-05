@@ -11,3 +11,4 @@ class User(AbstractUser):
     username = models.CharField(gettext_lazy("National Code"), max_length=10, validators=[MinLengthValidator(10)], unique=True)
     phone = PhoneNumberField(unique=True)
     email = models.EmailField(unique=True, blank=True, null=True)
+
