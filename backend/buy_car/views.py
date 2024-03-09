@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -7,9 +8,10 @@ from datetime import datetime, timedelta, timezone
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import asyncio
-from .app_selenium import get_captcha
+import time
+from .app_selenium import get_captcha, check_login, login
 from .models import BuyCar, Captcha
-from .serializers import CreateBuyCarSerializer, UpdateBuyCarSerializer, BuyCarSerializer
+from .serializers import CreateBuyCarSerializer, UpdateBuyCarSerializer, BuyCarSerializer, SendCaptchaCode
 
 # Create your views here.
 
@@ -55,7 +57,7 @@ class LoginUsers(APIView):
             start = datetime.today().replace(tzinfo=timezone.utc)
             finish = start + timedelta(hours=100)
             
-            list_buy = BuyCar.objects.filter(date__gt=start, date__lte=finish).all()
+            list_buy = BuyCar.objects.filter(date__gt=start, date__lte=finish, token_login=None).all()
             
             list_buy_serializer = BuyCarSerializer(data=list_buy, many=True)
             list_buy_serializer.is_valid()
@@ -80,15 +82,16 @@ class LoginUsers(APIView):
         if list_buy:
             
             captch_image_element = browser.find_element(By.CSS_SELECTOR, "#root > div > div.wrapper.d-flex.flex-column.min-vh-100.bg-light > div.body.flex-grow-1.px-0 > div > div > div > div.row.justify-content-center > div > div > div.card.p-12 > div > form > div > div > div:nth-child(3) > div > span > img")
-            captcha_image = get_captcha(browser, captch_image_element, './media/captcha/images/image.png', list_buy.first().id, 98, 85, 1.4)
-
-            
+            get_captcha(browser, captch_image_element, './media/captcha/images/image.png', 98, 85, 1.4)
             
             return Response(
                 data={
                     "comment": "success",
+                    "link_image": request.build_absolute_uri("/media/captcha/images/image.png"),
                     "start": start,
                     "finish": finish,
+                    "first_user":list_buy.first().user.username,
+                    "first_id": list_buy.first().id,
                     "list_buy": list_buy_serializer.data,
                     },
                 status=status.HTTP_201_CREATED)
@@ -96,5 +99,23 @@ class LoginUsers(APIView):
 
 
     def post(self, request):
-        self.browser.close
-        return Response("")
+        serializer_code = SendCaptchaCode(data=request.data)
+        serializer_code.is_valid()
+        
+        buy_car = BuyCar.objects.get(id=serializer_code.data["id"])
+        if_login = login(browser=browser, username=buy_car.user.username_site, password=buy_car.user.password_site, code=serializer_code.data["code"])
+        
+        if if_login:
+            time.sleep(3)
+            
+            _, is_login = check_login(browser)
+            
+            if is_login:
+                token = browser.execute_script("return window.localStorage.getItem(arguments[0]);", "SaleInternet")
+                buy_car.token_login = token
+                buy_car.save()
+            
+                browser.get('https://esale.ikd.ir/login')
+                return HttpResponseRedirect("/login_users")
+        
+        return Response(data={"comment": "error"})

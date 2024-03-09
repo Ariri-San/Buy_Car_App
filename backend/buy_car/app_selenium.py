@@ -17,7 +17,29 @@ def check_login(webdriver):
         return [user_name, False]
 
 
-def get_captcha(driver, element, path, id, move_x = 0, move_y = 0, resize = 1):
+def login(browser, username, password, code):
+    # try:
+        username_element = browser.find_element(By.NAME, "userName")
+        username_element.clear()
+        username_element.send_keys(username)
+
+        password_element = browser.find_element(By.NAME, "password")
+        password_element.clear()
+        password_element.send_keys(password)
+
+        captcha_element = browser.find_element(By.NAME, "captchaText")
+        captcha_element.clear()
+        captcha_element.send_keys(code)
+        
+        button = browser.find_element(By.CSS_SELECTOR, "#root > div > div.wrapper.d-flex.flex-column.min-vh-100.bg-light > div.body.flex-grow-1.px-0 > div > div > div > div.row.justify-content-center > div > div > div.card.p-12 > div > form > div > div > div:nth-child(4) > button")
+        button.click()
+        
+        return True
+    # except:
+    #     return False
+
+
+def get_captcha(driver, element, path, move_x = 0, move_y = 0, resize = 1):
     # now that we have the preliminary stuff out of the way time to get that image :D
     location = element.location
     size = element.size

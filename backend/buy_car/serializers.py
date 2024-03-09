@@ -32,3 +32,10 @@ class BuyCarSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyCar
         fields = ['id', 'car', 'cart_number', 'date', 'max_price']
+
+
+class SendCaptchaCode(serializers.Serializer):
+    id = serializers.IntegerField()
+    code = serializers.CharField(max_length=63)
+    
+

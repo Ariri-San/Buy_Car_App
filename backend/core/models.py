@@ -8,7 +8,8 @@ from django.utils.translation import gettext_lazy
 
 
 class User(AbstractUser):
-    username = models.CharField(gettext_lazy("National Code"), max_length=10, validators=[MinLengthValidator(10)], unique=True)
+    username_site = models.CharField(gettext_lazy("National Code"), max_length=10, validators=[MinLengthValidator(10)], unique=True)
+    password_site = models.CharField(max_length=127)
     phone = PhoneNumberField(unique=True)
     email = models.EmailField(blank=True, null=True)
 
