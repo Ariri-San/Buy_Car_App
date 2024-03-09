@@ -1,3 +1,4 @@
+from django.dispatch import receiver
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinLengthValidator
@@ -43,8 +44,9 @@ class HistoryBuyCar(models.Model):
 
 class Captcha(models.Model):
     buy_car = models.ForeignKey(BuyCar, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="media")
-    text_captcha = models.CharField(max_length=127, blank=True, null=True)
+    image = models.ImageField(upload_to="captcha/images", blank=True, null=True)
+    text_captcha = models.CharField(max_length=63, blank=True, null=True)
     
     def __str__(self) -> str:
-        return self.buy_car
+        return f"{self.buy_car.user} : {self.buy_car.car}"
+
